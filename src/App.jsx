@@ -1,8 +1,10 @@
-function App() {
+import React from 'react'
+import NavigationBar from './assets/components/NavigationBar/NavigationBar'
 
-  return (
-   <h1>Test</h1>
-  )
+function App() {
+	return (
+		<NavigationBar />
+	)
 }
 
 export default App
