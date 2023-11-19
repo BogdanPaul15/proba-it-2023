@@ -1,11 +1,13 @@
 import React from 'react'
-import "./MainContent.scss"
 import Hero from './Hero/Hero'
+import PollResults from './PoolResults/PollResults'
+import "./MainContent.scss"
 
 function MainContent() {
     return (
-        <main class="main">
+        <main className="main">
             <Hero />
+            <PollResults />
         </main>
     )
 }
