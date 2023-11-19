@@ -1,0 +1,19 @@
+@import "../../styles/fonts";
+@import "../../styles/variables";
+@import "../../styles/resets";
+
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 1rem;
+    max-width: 85rem;
+    margin-top: 6rem;
+    @media (min-width: $desktop) {
+        gap: 3rem;
+        margin-top: 0;
+    }
+}
