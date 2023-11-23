@@ -86,23 +86,23 @@
                 @media (min-width: $tablet) {
                     gap: 1.25rem;
                 }
-                input {
-                    font-family: $font-inter;
-                    font-size: 0.875rem;
-                    font-weight: $regular;
-                    color: $black-50;
-                    padding: 0.625rem;
-                    background-color: transparent;
-                    border: 1px solid $black-50;
-                    border-radius: 6px;
-                    outline: none;
-                    &::placeholder {
-                        color: $black-50;
-                    }
-                    @media (min-width: $tablet) {
-                        font-size: 1.25rem;
-                    }
-                }
+                // input {
+                //     font-family: $font-inter;
+                //     font-size: 0.875rem;
+                //     font-weight: $regular;
+                //     color: $black-50;
+                //     padding: 0.625rem;
+                //     background-color: transparent;
+                //     border: 1px solid $black-50;
+                //     border-radius: 6px;
+                //     outline: none;
+                //     &::placeholder {
+                //         color: $black-50;
+                //     }
+                //     @media (min-width: $tablet) {
+                //         font-size: 1.25rem;
+                //     }
+                // }
                 button {
                     font-family: $font-inter;
                     font-size: 0.8125rem;

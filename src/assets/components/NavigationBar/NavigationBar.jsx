@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Modal from '../MainContent/Modal/Modal';
+import Input from '../utils/Input/Input';
 import "./NavigationBar.scss"
 
 function NavigationBar() {
@@ -8,6 +9,53 @@ function NavigationBar() {
 	const [showLogin, setShowLogin] = useState(false);
 	const [showRegister, setShowRegister] = useState(false);
 	const [showCreatePoll, setshowCreatePoll] = useState(false);
+
+	// Handle errors
+	const [error, setError] = useState('');
+
+	// Handle Registration form 
+	const [regFormData, setRegFormData] = useState({
+		email: "",
+		password: "",
+		confirmPassword: "",
+	});
+
+	const handleRegChange = (e) => {
+		const { name, value } = e.target;
+		setRegFormData((prevFormData) => ({
+			...prevFormData, 
+			[name]: value,
+		}));
+	};
+	
+	const handleRegSubmit = (e) => {
+		e.preventDefault();
+
+		// Fetch POST request to send registration form data
+		fetch('http://localhost:3000/register', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(regFormData),
+		})
+		.then((response) => {
+			// Handle response
+			if (response.ok) {
+				// Successful submission
+				// response.redirect("/"); ??
+				console.log('Form submitted successfully');
+			} else {
+				// Handle errors
+				response.json().then((data) => {
+					setError(data.error);
+				});
+			}
+		})
+		.catch((error) => {
+			console.error('Error occurred during form submission:', error);
+		});
+	};
 
 	// Handle all modals (Login, Register and CreatePoll)
 	// Also close the menu on mobile when a modal is opened
@@ -86,29 +134,25 @@ function NavigationBar() {
 				</div>
 			</header>
 			{/* Conditional rendering the modals when they are opened */}
-			{showLogin && 
+			{/* {showLogin && 
 				<Modal onClose={closeModal} pollTitle="Login">
 					<form>
-						<label className="SROnly" htmlFor="email" hidden>Email</label>
-						<input type="text" id="email" name="email" maxLength={50} placeholder="Email" spellCheck="false" autoCorrect="off" />
-						<label className="SROnly" htmlFor="password" hidden>Password</label>
-						<input type="text" id="password" name="password" maxLength={50} placeholder="Password" spellCheck="false" autoCorrect="off" />
-						<button>Login</button>
+						<Input label="Email" type="email" id="email" placeholder="Email" />
+						<Input label="Password" type="password" id="password" placeholder="Password" />
+						<button type="submit">Login</button>
 					</form>
-				</Modal>}
+				</Modal>} */}
 			{showRegister && 
 				<Modal onClose={closeModal} pollTitle="Register">
-					<form>
-						<label className="SROnly" htmlFor="email" hidden>Email</label>
-						<input type="text" id="email" name="email" maxLength={50} placeholder="Email" spellCheck="false" autoCorrect="off" />
-						<label className="SROnly" htmlFor="password" hidden>Password</label>
-						<input type="text" id="password" name="password" maxLength={50} placeholder="Password" spellCheck="false" autoCorrect="off" />
-						<label className="SROnly" htmlFor="confirmpass" hidden>Confirm Password</label>
-						<input type="text" id="confirmpass" name="confirmpass" maxLength={50} placeholder="Confirm Password" spellCheck="false" autoCorrect="off" />
-						<button>Register</button>
+					<h1>{error}</h1>
+					<form onSubmit={handleRegSubmit}>
+						<Input label="Email" type="email" id="email" placeholder="Email" value={regFormData.email} onChange={handleRegChange} />
+						<Input label="Password" type="password" id="password" placeholder="Password" value={regFormData.password} onChange={handleRegChange} />
+						<Input label="Confirm Password" type="password" id="confirmPassword" placeholder="Confirm Password" value={regFormData.confirmPassword} onChange={handleRegChange} />
+						<button type="submit">Register</button>
 					</form>	
 				</Modal>}
-			{showCreatePoll && <Modal onClose={closeModal} pollTitle="Create Poll" />}
+			{/* {showCreatePoll && <Modal onClose={closeModal} pollTitle="Create Poll" />} */}
 		</>
     )
 }
