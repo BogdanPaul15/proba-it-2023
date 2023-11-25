@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import axios from 'axios'
 import Modal from '../MainContent/Modal/Modal';
 import Input from '../utils/Input/Input';
 import "./NavigationBar.scss"
@@ -9,6 +10,7 @@ function NavigationBar() {
 	const [showLogin, setShowLogin] = useState(false);
 	const [showRegister, setShowRegister] = useState(false);
 	const [showCreatePoll, setshowCreatePoll] = useState(false);
+	const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
 	// Handle errors
 	const [error, setError] = useState('');
@@ -17,7 +19,11 @@ function NavigationBar() {
 	const [regFormData, setRegFormData] = useState({
 		email: "",
 		password: "",
-		confirmPassword: "",
+		passwordConfirm: "",
+	});
+	const [loginFormData, setLoginFormData] = useState({
+		email: "",
+		password: "",
 	});
 
 	const handleRegChange = (e) => {
@@ -27,35 +33,80 @@ function NavigationBar() {
 			[name]: value,
 		}));
 	};
-	
-	const handleRegSubmit = (e) => {
-		e.preventDefault();
-
-		// Fetch POST request to send registration form data
-		fetch('http://localhost:3000/register', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(regFormData),
-		})
-		.then((response) => {
-			// Handle response
-			if (response.ok) {
-				// Successful submission
-				// response.redirect("/"); ??
-				console.log('Form submitted successfully');
-			} else {
-				// Handle errors
-				response.json().then((data) => {
-					setError(data.error);
-				});
-			}
-		})
-		.catch((error) => {
-			console.error('Error occurred during form submission:', error);
-		});
+	const handleLoginChange = (e) => {
+		const { name, value } = e.target;
+		setLoginFormData((prevFormData) => ({
+			...prevFormData, 
+			[name]: value,
+		}));
 	};
+	
+	const handleRegSubmit = async (e) => {
+		try {
+			e.preventDefault();
+
+			// Fetch POST request to send registration form data
+			const { email, password, passwordConfirm } = regFormData;
+			const res = await fetch('http://localhost:3000/api/users/register', {
+				method: 'POST',
+				url: "http://localhost:3000/api/users/register",
+				credentials: 'include',
+				withCredentials: true,
+				data: {
+					email,
+					password,
+					passwordConfirm,
+				}
+			});
+			if(res.data.status === 'success') {
+				window.setTimeout(() => {
+					location.assign('/');
+				}, 1500);
+			}
+		} catch (err) {
+			alert(err.response.data.message);
+		}
+	};
+
+	const handleLoginSubmit = async (e) => {
+		try {
+			e.preventDefault();
+			const { email, password } = loginFormData;
+			const res = await axios({
+				method: "POST",
+				url: "http://localhost:3000/api/users/login",
+				credentials: 'include',
+				withCredentials: true,
+				data: {
+					email,
+					password,
+				}
+			});
+			if(res.data.status === 'success') {
+				window.setTimeout(() => {
+					location.assign('/');
+				}, 1500);
+			}
+		} catch (err) {
+			alert(err.response.data.message);
+		}
+	}
+	const handleLogOut = async () => {
+		try {
+			const res = await axios({
+				method: "GET",
+				url: 'http://localhost:3000/api/users/logout',
+				credentials: 'include',
+				withCredentials: true,
+			});
+			if(res.data.status === 'success') {
+				location.reload(true);
+			}
+		} catch (err) {
+			alert(err.response.data.message);
+		}
+	}
+
 
 	// Handle all modals (Login, Register and CreatePoll)
 	// Also close the menu on mobile when a modal is opened
@@ -120,7 +171,7 @@ function NavigationBar() {
 								</button>
 							</li>
 							<li className="mainMenuItem">
-								<button className="mainMenuLink">
+								<button className="mainMenuLink" onClick={handleLogOut}>
 									<span className="linkText">Log out</span>
 								</button>
 							</li>
@@ -134,21 +185,21 @@ function NavigationBar() {
 				</div>
 			</header>
 			{/* Conditional rendering the modals when they are opened */}
-			{/* {showLogin && 
+			{showLogin && 
 				<Modal onClose={closeModal} pollTitle="Login">
-					<form>
-						<Input label="Email" type="email" id="email" placeholder="Email" />
-						<Input label="Password" type="password" id="password" placeholder="Password" />
+					<form onSubmit={handleLoginSubmit}>
+						<Input label="Email" type="email" id="email" placeholder="Email" value={loginFormData.email} onChange={handleLoginChange} />
+						<Input label="Password" type="password" id="password" placeholder="Password" value={loginFormData.password} onChange={handleLoginChange}/>
 						<button type="submit">Login</button>
 					</form>
-				</Modal>} */}
+				</Modal>}
 			{showRegister && 
 				<Modal onClose={closeModal} pollTitle="Register">
 					<h1>{error}</h1>
 					<form onSubmit={handleRegSubmit}>
 						<Input label="Email" type="email" id="email" placeholder="Email" value={regFormData.email} onChange={handleRegChange} />
 						<Input label="Password" type="password" id="password" placeholder="Password" value={regFormData.password} onChange={handleRegChange} />
-						<Input label="Confirm Password" type="password" id="confirmPassword" placeholder="Confirm Password" value={regFormData.confirmPassword} onChange={handleRegChange} />
+						<Input label="Confirm Password" type="password" id="passwordConfirm" placeholder="Confirm Password" value={regFormData.passwordConfirm} onChange={handleRegChange} />
 						<button type="submit">Register</button>
 					</form>	
 				</Modal>}

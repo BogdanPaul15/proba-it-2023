@@ -7,9 +7,6 @@ function PollResults() {
         <section className="pollSection">
             <div className="pollShowcase">
                 <Poll />
-                <Poll />
-                <Poll />
-                <Poll />
             </div>
         </section>
     )
