@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import axios from 'axios'
 import Modal from '../MainContent/Modal/Modal';
 import Input from '../utils/Input/Input';
+import PollInput from '../utils/PollInput/PollInput';
 import "./NavigationBar.scss"
 
 function NavigationBar() {
@@ -25,10 +27,23 @@ function NavigationBar() {
 		email: "",
 		password: "",
 	});
+	const [createPollData, setCreatePollData] = useState({
+		question: "",
+		option1: "",
+		option2: "",
+		option3: "",
+	});
 
 	const handleRegChange = (e) => {
 		const { name, value } = e.target;
 		setRegFormData((prevFormData) => ({
+			...prevFormData, 
+			[name]: value,
+		}));
+	};
+	const handlePollChange = (e) => {
+		const { name, value } = e.target;
+		setCreatePollData((prevFormData) => ({
 			...prevFormData, 
 			[name]: value,
 		}));
@@ -47,7 +62,7 @@ function NavigationBar() {
 
 			// Fetch POST request to send registration form data
 			const { email, password, passwordConfirm } = regFormData;
-			const res = await fetch('http://localhost:3000/api/users/register', {
+			const res = await axios('http://localhost:3000/api/users/register', {
 				method: 'POST',
 				url: "http://localhost:3000/api/users/register",
 				credentials: 'include',
@@ -64,7 +79,7 @@ function NavigationBar() {
 				}, 1500);
 			}
 		} catch (err) {
-			alert(err.response.data.message);
+			setError(err.response.data.message);
 		}
 	};
 
@@ -86,9 +101,52 @@ function NavigationBar() {
 				window.setTimeout(() => {
 					location.assign('/');
 				}, 1500);
+				// console.log(res.data.token);
 			}
 		} catch (err) {
-			alert(err.response.data.message);
+			setError(err.response.data.message);
+		}
+	}
+	const handleCreatePoll = async (e) => {
+		try {
+			e.preventDefault();
+			const { question, option1, option2, option3 } = createPollData;
+			const res = await axios({
+				method: "POST",
+				url: "http://localhost:3000/api/polls",
+				withCredentials: true,
+				data: {
+					question, 
+					options: {
+						option1: {
+							name: option1,
+							votes: {
+								voted_by: []
+							}
+						},
+						option2: {
+							name: option2,
+							votes: {
+								voted_by: []
+							}
+						},
+						option3: {
+							name: option3,
+							votes: {
+								voted_by: []
+							}
+						},
+					}
+				}
+			});
+			if(res.data.status === 'success') {
+				window.setTimeout(() => {
+					location.assign('/');
+				}, 1500);
+				// console.log(res.data.token);
+			}
+		} catch (err) {
+			setError(err.response.data.message);
 		}
 	}
 	const handleLogOut = async () => {
@@ -99,13 +157,33 @@ function NavigationBar() {
 				credentials: 'include',
 				withCredentials: true,
 			});
-			if(res.data.status === 'success') {
+			if(res.data.data.status === 'success') {
 				location.reload(true);
 			}
 		} catch (err) {
-			alert(err.response.data.message);
+			setError(err.response.data.message);
 		}
 	}
+
+	useEffect(() => {
+		async function fetchData() {
+			try {
+				const res = await axios({
+					method: "GET",
+					url: 'http://localhost:3000/api/users/checkToken',
+					credentials: 'include',
+					withCredentials: true,
+				});
+				if (res.data.status === 'success') {
+					setIsUserLoggedIn(true);
+				}
+			} catch (err) {err}
+		}
+	
+		fetchData(); // Call the async function
+
+        // Poți adăuga dependențe aici, dacă este nevoie
+    }, [isUserLoggedIn]);
 
 
 	// Handle all modals (Login, Register and CreatePoll)
@@ -129,12 +207,15 @@ function NavigationBar() {
 		setShowLogin(false);
 		setShowRegister(false);
 		setshowCreatePoll(false);
+		setError('');
+		setRegFormData('');
+		setLoginFormData('');
 	};
     return (
 		<>
 			<header className={`header ${isMenuOpen ? 'activeMenu' : ''}`}>
 				<div className="headerMain">
-					<a href="#" className="logo" title="Go to homepage.">
+					<a href="/" className="logo" title="Go to homepage.">
 						<svg viewBox="0 0 36 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M0 17.1142V8.37782H3.40988C4.08091 8.36087 4.74811 8.48408 5.36882 8.73959C5.88124 8.9572 6.31684 9.3231 6.61963 9.79026C6.90457 10.2869 7.0545 10.8495 7.0545 11.4221C7.0545 11.9947 6.90457 12.5573 6.61963 13.0539C6.31474 13.5192 5.87977 13.8846 5.36882 14.1046C4.74952 14.3652 4.0815 14.4899 3.40988 14.4702H0.688903L1.2508 13.8852V17.118L0 17.1142ZM1.2508 14.0045L0.688903 13.381H3.38294C4.02963 13.4276 4.67223 13.2465 5.19949 12.8692C5.39508 12.6823 5.55077 12.4577 5.65714 12.209C5.76351 11.9603 5.81835 11.6926 5.81835 11.4221C5.81835 11.1516 5.76351 10.8839 5.65714 10.6352C5.55077 10.3864 5.39508 10.1619 5.19949 9.975C4.67274 9.59631 4.03009 9.41386 3.38294 9.45928H0.688903L1.2508 8.83581V14.0045Z" fill="#FF1F66"/>
 							<path d="M10.9994 17.1911C10.3824 17.201 9.77356 17.0497 9.23288 16.7524C8.72249 16.4689 8.29828 16.0527 8.00517 15.5478C7.70033 15.018 7.54472 14.4155 7.55488 13.8043C7.54309 13.1942 7.69883 12.5925 8.00517 12.0648C8.30048 11.5659 8.72278 11.1542 9.22903 10.8717C9.77075 10.5739 10.3813 10.4239 10.9994 10.4368C11.615 10.4264 12.2231 10.5734 12.7659 10.864C13.2771 11.1399 13.7009 11.5531 13.9898 12.0571C14.2801 12.5944 14.4322 13.1955 14.4322 13.8063C14.4322 14.417 14.2801 15.0182 13.9898 15.5555C13.6999 16.0596 13.2764 16.4738 12.7659 16.7524C12.2254 17.0502 11.6164 17.2015 10.9994 17.1911ZM10.9994 16.1405C11.4025 16.148 11.8006 16.0498 12.154 15.8557C12.4868 15.662 12.7578 15.3777 12.9353 15.0359C13.1341 14.6564 13.2334 14.2327 13.2239 13.8043C13.2348 13.3771 13.1354 12.9543 12.9353 12.5766C12.753 12.2385 12.4779 11.9594 12.1424 11.7723C11.7926 11.583 11.401 11.4838 11.0032 11.4838C10.6055 11.4838 10.2139 11.583 9.86406 11.7723C9.53004 11.9626 9.25452 12.2408 9.06739 12.5766C8.85986 12.9519 8.75623 13.3757 8.7672 13.8043C8.75757 14.2341 8.86109 14.6588 9.06739 15.0359C9.2529 15.3769 9.52847 15.6605 9.86406 15.8557C10.2111 16.0482 10.6026 16.1464 10.9994 16.1405Z" fill="#FF1F66"/>
@@ -160,50 +241,72 @@ function NavigationBar() {
 					{/* TODO: Conditional render the content of the navbar by isAuth */}
 					<nav className="mainMenu">
 						<ul className="mainMenuList">
-							<li className="mainMenuItem">
-								<button className="mainMenuLink" onClick={openLogin}>
-									<span className="linkText">Login</span>
-								</button>
-							</li>
-							<li className="mainMenuItem">
-								<button className="mainMenuLink" onClick={openRegister}>
-									<span className="linkText">Register</span>
-								</button>
-							</li>
-							<li className="mainMenuItem">
-								<button className="mainMenuLink" onClick={handleLogOut}>
-									<span className="linkText">Log out</span>
-								</button>
-							</li>
-							<li className="mainMenuItem">
-								<button className="mainMenuLink" onClick={openCreatePoll}>
-									<span className="linkText">Create poll</span>
-								</button>
-							</li>
+							{isUserLoggedIn ?
+								<>
+									<li className="mainMenuItem">
+									<button className="mainMenuLink" onClick={handleLogOut}>
+										<span className="linkText">Log out</span>
+									</button>
+									</li>
+									<li className="mainMenuItem">
+										<button className="mainMenuLink" onClick={openCreatePoll}>
+											<span className="linkText">Create poll</span>
+										</button>
+									</li>
+								</> : 
+								<>
+									<li className="mainMenuItem">
+										<button className="mainMenuLink" onClick={openLogin}>
+											<span className="linkText">Login</span>
+										</button>
+									</li>
+									<li className="mainMenuItem">
+										<button className="mainMenuLink" onClick={openRegister}>
+											<span className="linkText">Register</span>
+										</button>
+									</li>
+								</>
+							}
 						</ul>
 					</nav>
 				</div>
 			</header>
 			{/* Conditional rendering the modals when they are opened */}
-			{showLogin && 
+			{
+				showLogin && 
 				<Modal onClose={closeModal} pollTitle="Login">
 					<form onSubmit={handleLoginSubmit}>
 						<Input label="Email" type="email" id="email" placeholder="Email" value={loginFormData.email} onChange={handleLoginChange} />
 						<Input label="Password" type="password" id="password" placeholder="Password" value={loginFormData.password} onChange={handleLoginChange}/>
+						<p className="formsError">{error}</p>
 						<button type="submit">Login</button>
 					</form>
-				</Modal>}
-			{showRegister && 
+				</Modal>
+			}
+			{
+				showRegister && 
 				<Modal onClose={closeModal} pollTitle="Register">
-					<h1>{error}</h1>
 					<form onSubmit={handleRegSubmit}>
 						<Input label="Email" type="email" id="email" placeholder="Email" value={regFormData.email} onChange={handleRegChange} />
 						<Input label="Password" type="password" id="password" placeholder="Password" value={regFormData.password} onChange={handleRegChange} />
 						<Input label="Confirm Password" type="password" id="passwordConfirm" placeholder="Confirm Password" value={regFormData.passwordConfirm} onChange={handleRegChange} />
+						<p className="formsError">{error}</p>
 						<button type="submit">Register</button>
 					</form>	
-				</Modal>}
-			{/* {showCreatePoll && <Modal onClose={closeModal} pollTitle="Create Poll" />} */}
+				</Modal>
+			}
+			{	
+				showCreatePoll && 
+				<Modal onClose={closeModal} pollTitle="Create Poll">
+					<form onSubmit={handleCreatePoll}>
+						<PollInput label="Title" type="text" id="question" placeholder="Type your question here" value={createPollData.question}  visible="formPollLabel" onChange={handlePollChange}/>
+						<PollInput label="Options" type="text" id="option1" placeholder="Option 1" value={createPollData.option1}  visible="formPollLabel" onChange={handlePollChange}/>
+						<PollInput label="Option 2" type="text" id="option2" placeholder="Option 2" value={createPollData.option2}  visible="SROnly" onChange={handlePollChange}/>
+						<PollInput label="Option 3" type="text" id="option3" placeholder="Option 3" value={createPollData.option3}  visible="SROnly" onChange={handlePollChange}/>
+						<button type="submit">Create poll</button>
+					</form>	
+				</Modal>
+			}
 		</>
     )
 }

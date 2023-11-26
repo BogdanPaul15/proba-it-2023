@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { promisify } = require("util");
 const User = require("../models/userModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
@@ -51,6 +52,10 @@ exports.register = catchAsync(async (req, res, next) => {
 		passwordConfirm: req.body.passwordConfirm,
 	});
 
+	if (!newUser) {
+		return next(new AppError("Incorrect email or password.", 401));
+	}
+
 	createSendToken(newUser, 201, res);
 });
 
@@ -88,5 +93,34 @@ exports.logout = (req, res) => {
 		httpOnly: true,
 	});
 
-	res.status(200).json({ status: "success" });
+	res.status(200).json({
+		data: {
+			status: "success",
+		},
+	});
 };
+
+exports.checkToken = catchAsync(async (req, res) => {
+	if (req.cookies.jwt && req.cookies.jwt !== "loggedout") {
+		// verify token
+		const decoded = await promisify(jwt.verify)(
+			req.cookies.jwt,
+			process.env.JWT_SECRET
+		);
+
+		// check if user still exists
+		const currentUser = await User.findById(decoded.id);
+		if (currentUser) {
+			return res.status(201).json({
+				status: "success",
+				id: decoded.id,
+			});
+		} else {
+			return next(new AppError("User does not exists.", 401));
+		}
+	} else {
+		return res.status(201).json({
+			status: "fail",
+		});
+	}
+});
