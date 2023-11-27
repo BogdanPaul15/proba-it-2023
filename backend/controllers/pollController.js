@@ -94,6 +94,9 @@ exports.deletePoll = catchAsync(async (req, res, next) => {
 exports.votePoll = catchAsync(async (req, res, next) => {
 	const { currentUserId, selectedOption } = req.body;
 	// console.log(selectedOption);
+	if (!selectedOption) {
+		return next(new AppError("You must select an option.", 404));
+	}
 	const option = `options.${selectedOption}.votes.quantity`;
 	const poll = await Poll.findById(req.params.id);
 	if (!poll) {
@@ -103,9 +106,10 @@ exports.votePoll = catchAsync(async (req, res, next) => {
 		option.votes.voted_by.includes(currentUserId)
 	);
 	if (votedInPoll) {
-		return res
-			.status(400)
-			.json({ message: "You have already voted in this poll" });
+		// return res
+		// 	.status(400)
+		// 	.json({ message: "You have already voted in this poll" });
+		return next(new AppError("You have already voted in this poll", 400));
 	}
 	const updatedPoll = await Poll.findByIdAndUpdate(
 		req.params.id,

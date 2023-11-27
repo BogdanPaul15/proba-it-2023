@@ -9,7 +9,13 @@ const userSchema = new mongoose.Schema({
 		required: [true, "Please provide a email!"],
 		unique: true,
 		lowecase: true,
-		validate: [validator.isEmail, "Please provide a valid email!"],
+		validate: {
+			validator: function (el) {
+				// Use a regex to check if the email ends with @gmail.com
+				return /\b[A-Za-z0-9._%+-]+@gmail\.com\b/.test(el);
+			},
+			message: "The field must end in @gmail.com!",
+		},
 	},
 	password: {
 		type: String,

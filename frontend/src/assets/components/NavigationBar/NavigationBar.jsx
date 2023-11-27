@@ -72,10 +72,8 @@ function NavigationBar() {
 				}
 			});
 			if(res.data.status === 'success') {
-				// window.setTimeout(() => {
-				// 	location.assign('/');
-				// }, 1500);
-				console.log("da");
+				closeModal();
+				setShowLogin(true);
 			}
 		} catch (err) {
 			setError(err.response.data.message);
@@ -100,7 +98,6 @@ function NavigationBar() {
 				window.setTimeout(() => {
 					location.assign('/');
 				}, 1500);
-				// console.log(res.data.token);
 			}
 		} catch (err) {
 			setError(err.response.data.message);

@@ -10,11 +10,6 @@ function Poll(props) {
         try {
             e.preventDefault();
 
-            if (!selectedOption) {
-                setVotingError("You must select an option.");
-                return;
-            }
-
 			const res = await axios({
 				method: "PATCH",
 				url: `http://localhost:3000/api/polls/vote/${props.id}`,
@@ -79,35 +74,41 @@ function Poll(props) {
                 <ul className="pollOptionShowcase">
                     <li className="pollOptionItem">
                         <div className="pollInputs">
-                            <input type="radio" id="option1" name="options" value={props.option1} className="" onChange={() => setSelectedOption("option1")} />
-                            <label htmlFor="option1">{props.option1}</label>
+                            <input type="radio" id={props.option1} name="options" value={props.option1} className="" onChange={() => setSelectedOption("option1")} />
+                            <label htmlFor={props.option1}>{props.option1}</label>
                         </div>
                         <p>{props.votes1}</p>
+                        <p>{props.voted_by1}</p>
                     </li>
                     <li className="pollOptionItem">
                         <div className="pollInputs">
-                            <input type="radio" id="option2" name="options" value={props.option2} className="" onChange={() => setSelectedOption("option2")}/>
-                            <label htmlFor="option2">{props.option2}</label>
+                            <input type="radio" id={props.option2} name="options" value={props.option2} className="" onChange={() => setSelectedOption("option2")}/>
+                            <label htmlFor={props.option2}>{props.option2}</label>
                         </div>
                         <p>{props.votes2}</p>
                     </li>
                     <li className="pollOptionItem">
                         <div className="pollInputs">
-                            <input type="radio" id="option3" name="options" value={props.option3} className="" onChange={() => setSelectedOption("option3")}/>
-                            <label htmlFor="option3">{props.option3}</label>
+                            <input type="radio" id={props.option3} name="options" value={props.option3} className="" onChange={() => setSelectedOption("option3")}/>
+                            <label htmlFor={props.option3}>{props.option3}</label>
                         </div>
                         <p>{props.votes3}</p>
                     </li>
                 </ul>
                 <p className="pollVotingError">{votingError}</p>
-                <div className="pollOptionButtons">
-                    {
-                        currentUserId == props.created_by ? <button className="pollButton" onClick={handlePollDelete}>Delete</button> : ""
-                    }
-                    {
-                        currentUserId ? <button className="pollButton" onClick={handlePollVote}>Vote</button> : ""
-                    }
-                </div>
+                <footer className="pollFooter">
+                    <div className="pollStats">
+                        <span>Total Votes: {props.votes1 + props.votes2 + props.votes3}</span>
+                    </div>
+                    <div className="pollOptionButtons">
+                        {
+                            currentUserId == props.created_by ? <button className="pollButton" onClick={handlePollDelete}>Delete</button> : ""
+                        }
+                        {
+                            currentUserId ? <button className="pollButton" onClick={handlePollVote}>Vote</button> : ""
+                        }
+                    </div>
+                </footer>
             </form>
         </div>
     )

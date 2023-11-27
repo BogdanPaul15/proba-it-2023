@@ -47,7 +47,7 @@
         font-family: $font-inter;
         font-size: 0.625rem;
         font-weight: $medium;
-        margin: 0;
+        margin: 0.625rem 0;
         @media (min-width: $tablet) {
             font-size: 0.9375rem;
         }
@@ -123,33 +123,51 @@
             }
         }
     }
-    .pollOptionButtons {
+    .pollFooter {
         display: flex;
         flex-direction: row;
-        justify-content: flex-end;
-        align-items: flex-end;
-        gap: 0.5rem;
-        .pollButton {
-            padding: 0.25rem 0.75rem;
-            background-color: $primary-dark;
-            border-radius: 2px;
+        justify-content: space-between;
+        align-items: center;
+        .pollStats {
             font-family: $font-inter;
             font-size: 0.625rem;
-            font-weight: $medium;
-            color: $black-50;
-            outline: none;
-            border: none;
-            &:hover {
-                color: $black-900;
-                background-color: $primary-light;
-            }
+            font-weight: $light;
+            color: $black-900;
             @media (min-width: $tablet) {
-                padding: 0.5rem 1rem;
                 font-size: 0.9375rem;
             }
             @media (min-width: $desktop) {
                 font-size: 1.125rem;
-                border-radius: 5px;
+            }
+        }
+        .pollOptionButtons {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: flex-end;
+            gap: 0.5rem;
+            .pollButton {
+                padding: 0.25rem 0.75rem;
+                background-color: $primary-dark;
+                border-radius: 2px;
+                font-family: $font-inter;
+                font-size: 0.625rem;
+                font-weight: $medium;
+                color: $black-50;
+                outline: none;
+                border: none;
+                &:hover {
+                    color: $black-900;
+                    background-color: $primary-light;
+                }
+                @media (min-width: $tablet) {
+                    padding: 0.5rem 1rem;
+                    font-size: 0.9375rem;
+                }
+                @media (min-width: $desktop) {
+                    font-size: 1.125rem;
+                    border-radius: 5px;
+                }
             }
         }
     }
