@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import "./Poll.scss"
 
@@ -109,7 +109,6 @@ function Poll(props) {
                     }
                 </div>
             </form>
-
         </div>
     )
 }

@@ -28,11 +28,12 @@ app.use((req, res, next) => {
 app.use("/api/users", userRouter);
 app.use("/api/polls", pollRouter);
 
+// Handle all other routes that are not defined
 app.all("*", (req, res, next) => {
-	// Skip all middlewares
 	next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 
+// Global error handling middleware
 app.use(globalErrorHandler);
 
 module.exports = app;

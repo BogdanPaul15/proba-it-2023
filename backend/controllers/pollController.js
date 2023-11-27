@@ -65,26 +65,24 @@ exports.deletePoll = catchAsync(async (req, res, next) => {
 
 		// check if user still exists
 		const currentUser = await User.findById(decoded.id);
-		if (currentUser) {
-			const poll_find = await Poll.findById(req.params.id);
-			if (currentUser.id === poll_find.created_by) {
-				const poll = await Poll.findByIdAndDelete(req.params.id);
+		if (!currentUser) {
+			return next(new AppError("No user found with that id", 404));
+		}
+		const poll_find = await Poll.findById(req.params.id);
+		if (!poll_find) {
+			return next(new AppError("No poll found with that ID.", 404));
+		}
+		if (currentUser.id === poll_find.created_by) {
+			const poll = await Poll.findByIdAndDelete(req.params.id);
 
-				if (!poll) {
-					return next(
-						new AppError("No poll found with that ID", 404)
-					);
-				}
-
-				res.status(201).json({
-					status: "success",
-					data: null,
-				});
-			} else {
-				return res.status(201).json({
-					status: "fail",
-				});
+			if (!poll) {
+				return next(new AppError("No poll found with that ID", 404));
 			}
+
+			res.status(201).json({
+				status: "success",
+				data: null,
+			});
 		}
 	} else {
 		return res.status(201).json({
@@ -98,6 +96,9 @@ exports.votePoll = catchAsync(async (req, res, next) => {
 	// console.log(selectedOption);
 	const option = `options.${selectedOption}.votes.quantity`;
 	const poll = await Poll.findById(req.params.id);
+	if (!poll) {
+		return next(new AppError("No poll found with that ID.", 404));
+	}
 	const votedInPoll = Object.values(poll.options).some((option) =>
 		option.votes.voted_by.includes(currentUserId)
 	);
@@ -116,6 +117,9 @@ exports.votePoll = catchAsync(async (req, res, next) => {
 		},
 		{ new: true }
 	);
+	if (!updatedPoll) {
+		return next(new AppError("No poll found with that ID.", 404));
+	}
 	res.status(201).json({
 		status: "success",
 		data: {

@@ -46,6 +46,7 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.register = catchAsync(async (req, res, next) => {
+	// Create a new user based on the received data
 	const newUser = await User.create({
 		email: req.body.email,
 		password: req.body.password,
@@ -53,10 +54,17 @@ exports.register = catchAsync(async (req, res, next) => {
 	});
 
 	if (!newUser) {
-		return next(new AppError("Incorrect email or password.", 401));
+		return next(new AppError("Incorrect email or password!", 401));
 	}
 
-	createSendToken(newUser, 201, res);
+	newUser.password = undefined;
+
+	res.status(201).json({
+		status: "success",
+		data: {
+			newUser,
+		},
+	});
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -64,7 +72,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
 	// 1) Check if email and password exists
 	if (!email || !password) {
-		return next(new AppError("Please provide email or password.", 400));
+		return next(new AppError("Please provide email or password!", 400));
 	}
 
 	// 2) Check if user exists && password is correct
@@ -73,7 +81,7 @@ exports.login = catchAsync(async (req, res, next) => {
 	}).select("+password");
 
 	if (!user || !(await user.correctPassword(password, user.password))) {
-		return next(new AppError("Incorrect email or password.", 401));
+		return next(new AppError("Incorrect email or password!", 401));
 	}
 
 	// 3) If everything is ok, send the token to client

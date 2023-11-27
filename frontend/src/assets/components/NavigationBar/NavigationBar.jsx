@@ -62,11 +62,9 @@ function NavigationBar() {
 
 			// Fetch POST request to send registration form data
 			const { email, password, passwordConfirm } = regFormData;
-			const res = await axios('http://localhost:3000/api/users/register', {
+			const res = await axios({
 				method: 'POST',
 				url: "http://localhost:3000/api/users/register",
-				credentials: 'include',
-				withCredentials: true,
 				data: {
 					email,
 					password,
@@ -74,9 +72,10 @@ function NavigationBar() {
 				}
 			});
 			if(res.data.status === 'success') {
-				window.setTimeout(() => {
-					location.assign('/');
-				}, 1500);
+				// window.setTimeout(() => {
+				// 	location.assign('/');
+				// }, 1500);
+				console.log("da");
 			}
 		} catch (err) {
 			setError(err.response.data.message);
