@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import voted from '../../../../images/circle-check-solid.svg'
 import "./Poll.scss"
 
 function Poll(props) {
@@ -63,7 +64,7 @@ function Poll(props) {
 
         // Poți adăuga dependențe aici, dacă este nevoie
     }, [currentUserId]);
-	
+    // console.log(currentUserId);
     return (
         <div className="pollCard">
             <div className="pollHeader">
@@ -72,40 +73,56 @@ function Poll(props) {
             </div>
             <form className="#">
                 <ul className="pollOptionShowcase">
-                    <li className="pollOptionItem">
-                        <div className="pollInputs">
-                            <input type="radio" id={props.option1} name="options" value={props.option1} className="" onChange={() => setSelectedOption("option1")} />
-                            <label htmlFor={props.option1}>{props.option1}</label>
-                        </div>
-                        <p>{props.votes1}</p>
-                        <p>{props.voted_by1}</p>
-                    </li>
-                    <li className="pollOptionItem">
-                        <div className="pollInputs">
-                            <input type="radio" id={props.option2} name="options" value={props.option2} className="" onChange={() => setSelectedOption("option2")}/>
-                            <label htmlFor={props.option2}>{props.option2}</label>
-                        </div>
-                        <p>{props.votes2}</p>
-                    </li>
-                    <li className="pollOptionItem">
-                        <div className="pollInputs">
-                            <input type="radio" id={props.option3} name="options" value={props.option3} className="" onChange={() => setSelectedOption("option3")}/>
-                            <label htmlFor={props.option3}>{props.option3}</label>
-                        </div>
-                        <p>{props.votes3}</p>
-                    </li>
+                    {
+                        props.options.map((option) => {
+                            return(
+                                <li className="pollOptionItem" key={option._id}>
+                                    {
+                                    props.voters.find(el => el === currentUserId) ?
+                                    <div className="pollVoting">
+                                        <p>{`${Math.trunc((option.votes.quantity / props.total_votes) * 100)}%`}</p>
+                                    </div> : "" }
+                                    <div className="pollInputs">
+                                        <div className="asta">
+                                            {
+                                                currentUserId ? 
+                                                props.voters.find(el => el === currentUserId) ? <input type="radio" id={option._id} name="options" value={option.name} className="" onChange={() => setSelectedOption(option._id)} disabled className="SROnly" /> :
+                                                <input type="radio" id={option._id} name="options" value={option.name} className="" onChange={() => setSelectedOption(option._id)} /> : 
+                                                <input type="radio" id={option._id} name="options" value={option.name} className="" onChange={() => setSelectedOption(option._id)} disabled />
+                                            }
+                                            <label htmlFor={option._id}>{option.name}</label>
+                                            {
+                                                option.votes.voters.find(el => el === currentUserId) ?
+                                                <img src={voted} /> : ""
+                                            }
+                                        </div>
+                                        {
+                                            props.voters.find(el => el === currentUserId) &&  (option.votes.quantity / props.total_votes) * 100 ?
+                                            <div className="pollOptionProgress">
+                                            <div className="progressBar" style={{width: `${(option.votes.quantity / props.total_votes) * 100}%`}}></div>
+                                        </div> : ""
+                                        }
+                                    </div>
+                                    {/* {
+                                        props.voters.find(el => el === currentUserId) ? <p>{option.votes.quantity}</p> : ""
+                                    } */}
+                                    {console.log(props.voters)}
+                                </li>
+                            );
+                        })
+                    }
                 </ul>
                 <p className="pollVotingError">{votingError}</p>
                 <footer className="pollFooter">
                     <div className="pollStats">
-                        <span>Total Votes: {props.votes1 + props.votes2 + props.votes3}</span>
+                        <span>Total Votes: {props.total_votes}</span>
                     </div>
                     <div className="pollOptionButtons">
                         {
                             currentUserId == props.created_by ? <button className="pollButton" onClick={handlePollDelete}>Delete</button> : ""
                         }
                         {
-                            currentUserId ? <button className="pollButton" onClick={handlePollVote}>Vote</button> : ""
+                            currentUserId ? props.voters.find(el => el === currentUserId) ? "" : <button className="pollButton" onClick={handlePollVote}>Vote</button> : ""
                         }
                     </div>
                 </footer>

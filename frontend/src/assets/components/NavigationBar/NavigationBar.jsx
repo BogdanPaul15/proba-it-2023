@@ -29,9 +29,13 @@ function NavigationBar() {
 	});
 	const [createPollData, setCreatePollData] = useState({
 		question: "",
-		option1: "",
-		option2: "",
-		option3: "",
+		options: [{
+			name: ""
+		}, {
+			name: ""
+		}, {
+			name: ""
+		}],
 	});
 
 	const handleRegChange = (e) => {
@@ -41,12 +45,17 @@ function NavigationBar() {
 			[name]: value,
 		}));
 	};
-	const handlePollChange = (e) => {
-		const { name, value } = e.target;
-		setCreatePollData((prevFormData) => ({
-			...prevFormData, 
-			[name]: value,
-		}));
+	const handlePollChange = (e, index) => {
+		const { value } = e.target;
+		// Update the option at the specified index
+		setCreatePollData((prevFormData) => {
+			const updatedOptions = [...prevFormData.options];
+			updatedOptions[index].name = value;
+			return {
+				...prevFormData,
+				options: updatedOptions,
+			};
+		});
 	};
 	const handleLoginChange = (e) => {
 		const { name, value } = e.target;
@@ -106,33 +115,14 @@ function NavigationBar() {
 	const handleCreatePoll = async (e) => {
 		try {
 			e.preventDefault();
-			const { question, option1, option2, option3 } = createPollData;
+			const { question, options } = createPollData;
 			const res = await axios({
 				method: "POST",
 				url: "http://localhost:3000/api/polls",
 				withCredentials: true,
 				data: {
 					question, 
-					options: {
-						option1: {
-							name: option1,
-							votes: {
-								voted_by: []
-							}
-						},
-						option2: {
-							name: option2,
-							votes: {
-								voted_by: []
-							}
-						},
-						option3: {
-							name: option3,
-							votes: {
-								voted_by: []
-							}
-						},
-					}
+					options
 				}
 			});
 			if(res.data.status === 'success') {
@@ -295,10 +285,35 @@ function NavigationBar() {
 				showCreatePoll && 
 				<Modal onClose={closeModal} pollTitle="Create Poll">
 					<form onSubmit={handleCreatePoll}>
-						<PollInput label="Title" type="text" id="question" placeholder="Type your question here" value={createPollData.question}  visible="formPollLabel" onChange={handlePollChange}/>
-						<PollInput label="Options" type="text" id="option1" placeholder="Option 1" value={createPollData.option1}  visible="formPollLabel" onChange={handlePollChange}/>
-						<PollInput label="Option 2" type="text" id="option2" placeholder="Option 2" value={createPollData.option2}  visible="SROnly" onChange={handlePollChange}/>
-						<PollInput label="Option 3" type="text" id="option3" placeholder="Option 3" value={createPollData.option3}  visible="SROnly" onChange={handlePollChange}/>
+						<PollInput
+							label="Title"
+							type="text"
+							id="question"
+							placeholder="Type your question here"
+							value={createPollData.question}
+							visible="formPollLabel"
+							onChange={(e) => setCreatePollData((prevData) => ({ ...prevData, question: e.target.value }))}
+						/>
+						<div className="formPollOptionsSection">
+							<p>Options</p>
+							<div className="formPollOptions">
+							{
+							createPollData.options.slice(0, 3).map((option, index) => (
+								<PollInput
+									key={index}
+									label={`Option ${index + 1}`}
+									type="text"
+									id={`option${index + 1}`}
+									placeholder={`Option ${index + 1}`}
+									value={option.name}
+									visible="SROnly"
+									onChange={(e) => handlePollChange(e, index)}
+								/>
+								))
+							}
+							</div>
+						</div>
+						<p className="formsError">{error}</p>
 						<button type="submit">Create poll</button>
 					</form>	
 				</Modal>

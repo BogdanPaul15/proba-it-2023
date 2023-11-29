@@ -11,6 +11,9 @@
         font-size: 0.875rem;
         font-weight: $medium;
         color: $black-50;
+        @media (min-width: $tablet) {
+            font-size: 1.25rem;
+        }
     }
     .formPollInput {
         font-family: $font-inter;
@@ -30,7 +33,7 @@
             font-size: 1.25rem;
         }
         @media (min-width: $desktop) {
-            padding: 0.625rem 30rem 0.625rem 0.625rem;
+            min-width: 760px;
             border-radius: 5px;
             border-top: 4px solid $primary-light;
         }

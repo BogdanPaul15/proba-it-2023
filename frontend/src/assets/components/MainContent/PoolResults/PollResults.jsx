@@ -32,15 +32,9 @@ function PollResults() {
                         id={poll._id} 
                         created_by={poll.created_by} 
                         question={poll.question} 
-                        option1={poll.options.option1.name} 
-                        option2={poll.options.option2.name} 
-                        option3={poll.options.option3.name} 
-                        votes1={poll.options.option1.votes.quantity} 
-                        votes2={poll.options.option2.votes.quantity} 
-                        votes3={poll.options.option3.votes.quantity}
-                        voted_by1={poll.options.option1.votes.voted_by} 
-                        voted_by2={poll.options.option2.votes.voted_by} 
-                        voted_by3={poll.options.option3.votes.voted_by} 
+                        options={poll.options}
+                        total_votes={poll.total_votes}
+                        voters={poll.voters}
                         />
                     })
                 }

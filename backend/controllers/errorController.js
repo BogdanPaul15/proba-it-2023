@@ -27,10 +27,10 @@ const sendErrorDev = (err, req, res) => {
 	// A) API
 	if (req.originalUrl.startsWith("/api")) {
 		return res.status(err.statusCode).json({
-			status: "muie",
+			status: "fail",
 			error: err,
-			// message: err.message,
-			// stack: err.stack,
+			message: err.message,
+			stack: err.stack,
 		});
 	}
 

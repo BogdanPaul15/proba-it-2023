@@ -7,7 +7,6 @@ const AppError = require("../utils/appError");
 
 exports.getAllPolls = catchAsync(async (req, res, next) => {
 	const polls = await Poll.find();
-	// console.log(polls);
 	res.status(200).json({
 		status: "success",
 		results: polls.length,
@@ -23,28 +22,10 @@ exports.createPoll = catchAsync(async (req, res, next) => {
 		req.cookies.jwt,
 		process.env.JWT_SECRET
 	);
+	// const newOptions = req.body.options;
 	const newPoll = await Poll.create({
 		question: req.body.question,
-		options: {
-			option1: {
-				name: req.body.options.option1.name,
-				votes: {
-					voted_by: req.body.options.option1.votes.voted_by,
-				},
-			},
-			option2: {
-				name: req.body.options.option2.name,
-				votes: {
-					voted_by: req.body.options.option2.votes.voted_by,
-				},
-			},
-			option3: {
-				name: req.body.options.option3.name,
-				votes: {
-					voted_by: req.body.options.option3.votes.voted_by,
-				},
-			},
-		},
+		options: req.body.options,
 		created_by: decoded.id,
 	});
 	res.status(201).json({
@@ -93,34 +74,45 @@ exports.deletePoll = catchAsync(async (req, res, next) => {
 
 exports.votePoll = catchAsync(async (req, res, next) => {
 	const { currentUserId, selectedOption } = req.body;
-	// console.log(selectedOption);
 	if (!selectedOption) {
 		return next(new AppError("You must select an option.", 404));
 	}
-	const option = `options.${selectedOption}.votes.quantity`;
+
 	const poll = await Poll.findById(req.params.id);
 	if (!poll) {
 		return next(new AppError("No poll found with that ID.", 404));
 	}
-	const votedInPoll = Object.values(poll.options).some((option) =>
-		option.votes.voted_by.includes(currentUserId)
+
+	const optionToVote = poll.options.find(
+		(option) => option._id.toString() === selectedOption
 	);
+	if (!optionToVote) {
+		return next(
+			new AppError("Selected option not found in the poll.", 400)
+		);
+	}
+
+	const votedInPoll = optionToVote.votes.voters.includes(currentUserId);
 	if (votedInPoll) {
-		// return res
-		// 	.status(400)
-		// 	.json({ message: "You have already voted in this poll" });
 		return next(new AppError("You have already voted in this poll", 400));
 	}
-	const updatedPoll = await Poll.findByIdAndUpdate(
-		req.params.id,
-		{
-			$inc: { [option]: 1 },
-			$push: {
-				[`options.${selectedOption}.votes.voted_by`]: currentUserId,
-			},
+
+	const optionId = optionToVote._id.toString();
+
+	const update = {
+		$inc: { [`options.$[elem].votes.quantity`]: 1 },
+		$push: {
+			[`options.$[elem].votes.voters`]: currentUserId,
 		},
-		{ new: true }
+	};
+
+	const optionsFilter = [{ "elem._id": optionId }];
+	const updatedPoll = await Poll.findOneAndUpdate(
+		{ _id: req.params.id },
+		update,
+		{ new: true, arrayFilters: optionsFilter }
 	);
+
 	if (!updatedPoll) {
 		return next(new AppError("No poll found with that ID.", 404));
 	}
