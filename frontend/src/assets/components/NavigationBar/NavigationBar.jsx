@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { React, useEffect, useState } from 'react'
 import axios from 'axios'
 import Modal from '../MainContent/Modal/Modal';
 import Input from '../utils/Input/Input';

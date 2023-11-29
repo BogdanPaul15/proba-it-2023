@@ -1,3 +1,4 @@
+import React from "react"
 import ilustration from "../../../images/ilustration.svg"
 import "./Hero.scss"
 
