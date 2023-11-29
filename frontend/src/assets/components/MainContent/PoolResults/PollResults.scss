@@ -1,0 +1,23 @@
+@import "../../../styles/fonts";
+@import "../../../styles/variables";
+@import "../../../styles/resets";
+
+.pollSection {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .pollShowcase {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-items: center;
+        gap: 1rem;
+        max-width: 85rem;
+        @media (min-width: $desktop) {
+            flex-direction: row;
+            gap: 6rem;
+        }
+    }
+}

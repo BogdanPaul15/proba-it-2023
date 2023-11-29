@@ -1,0 +1,41 @@
+@import "../../../styles/fonts";
+@import "../../../styles/variables";
+@import "../../../styles/resets";
+
+.pollInputContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    .formPollLabel {
+        font-family: $font-inter;
+        font-size: 0.875rem;
+        font-weight: $medium;
+        color: $black-50;
+        @media (min-width: $tablet) {
+            font-size: 1.25rem;
+        }
+    }
+    .formPollInput {
+        font-family: $font-inter;
+        font-size: 0.875rem;
+        font-weight: $regular;
+        color: $black-50;
+        padding: 0.625rem 1.5rem 0.625rem 0.625rem;
+        background: rgba(255, 255, 255, 0.44);
+        border: none;
+        border-top: 2px solid $primary-light;
+        border-radius: 2px;
+        outline: none;
+        &::placeholder {
+            color: $black-50;
+        }
+        @media (min-width: $tablet) {
+            font-size: 1.25rem;
+        }
+        @media (min-width: $desktop) {
+            min-width: 760px;
+            border-radius: 5px;
+            border-top: 4px solid $primary-light;
+        }
+    }
+}

@@ -1,0 +1,41 @@
+// Custom CSS resets
+html { 
+    font-size: 16px; 
+    line-height: 1.25; 
+    -webkit-text-size-adjust: 100%;
+    body {
+        margin: 0;
+        button, input, optgroup, select, textarea { 
+            font-family: inherit; 
+            font-size: 1rem; 
+            line-height: 1.25; 
+            margin: 0; 
+        }
+        button { 
+            cursor: pointer; 
+        }
+        button, input { 
+            overflow: visible; 
+        }
+        .activeMenu {
+            overflow: hidden;
+        }
+    }
+}
+
+// Utility classes
+
+/* This class is for screen readers only */
+.SROnly { 
+    clip: rect(1px, 1px, 1px, 1px); 
+    clip-path: inset(50%); 
+    height: 1px; 
+    width: 1px; 
+    margin: -1px; 
+    overflow: hidden; 
+    padding: 0; 
+    position: absolute; 
+}
+[hidden], .Hidden {
+    display: none; 
+}

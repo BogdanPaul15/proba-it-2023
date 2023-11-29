@@ -1,0 +1,181 @@
+@import "../../styles/fonts";
+@import "../../styles/variables";
+@import "../../styles/resets";
+
+.header {
+    &:after {
+        content:"";
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: $black-50;
+        border-bottom: 1px solid $black-50;
+    }
+    position: sticky;
+    top: 0;
+    z-index: 9;
+    padding: 0 1rem;
+    margin: auto;
+    box-shadow: 0px 4px 4px 0px rgba(0,0,0,.25);
+    &.activeMenu {
+        .mainMenu {
+            transform: translate3d(0, 0, 0);
+        }
+        .menuTrigger {
+            .icon {
+                padding: 0.625rem 0 0;
+            }
+        }
+        .hamburgerBar1 { 
+            position: absolute; 
+            transform: rotate(45deg); 
+            margin-top: 0; 
+            transition: transform .3s ease-in-out;
+        }
+        .hamburgerBar2 { 
+            position: absolute; 
+            transform: rotate(-45deg); 
+            transition: transform .3s ease-in-out;
+        }
+        .hamburgerBar3 {
+            width: 0px;
+            transition: width .3s ease-in-out;
+        }
+    }
+    .headerMain {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        margin: auto;
+        padding: 1rem 0;
+        max-width: 85rem;
+        .logo {
+            display: block;
+            svg {
+                width: 100%;
+                height: 36px;
+                @media (min-width: $desktop) {
+                    height: 45px;
+                }
+            }
+        }
+    }
+}
+
+.menuTrigger {
+    display: block;
+    text-align: center;
+    background: transparent;
+    border: none;
+    text-align: center;
+    cursor: pointer;
+    @media (min-width: $desktop) {
+        display: none;
+    }
+}
+
+.menuTrigger .icon {
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0.35rem 0 0;
+    box-sizing: border-box;
+}
+
+.activeMenu .menuTrigger .icon {
+    padding: 0.625rem 0 0;
+}
+
+.hamburgerBar {
+    display: block;
+    width: 1.5rem;
+    height: 0.1rem;
+    margin: 0 0 0.2rem;
+    background-color: $primary-dark;
+    border-radius: 0.25rem;
+    transition: transform .4s ease-out;
+}
+
+.hamburgerBar3 {
+    margin: 0;
+    transition: width .2s ease-in-out;
+}
+
+.mainMenu {
+    padding: 0.75rem 0.625rem;
+    max-height: calc(100vh - 4.55rem);
+    overflow-y: auto;
+    background-color: $black-50;
+    border-radius: 1px;
+    width: 100%;
+    position: fixed;
+    line-height: 1.5rem;
+    top: 4.55rem;
+    right: 0;
+    box-sizing: border-box;
+    transform: translateX(100%);
+    transition: transform .20s;
+    transition-timing-function: cubic-bezier(.4,0,.2,1);
+    box-shadow: 0px 4px 4px 0px rgba(0,0,0,.25);
+    max-width: 10rem;
+    @media (min-width: $desktop) {
+        width: auto;
+        height: unset;
+        overflow: visible;
+        transform: none;
+        transition: none;
+        padding: 0;
+        background: transparent;
+        position: static;
+        top: unset;
+        left: unset;
+        display: flex;
+        flex-direction: row;
+        box-shadow: none;
+        max-width: none;
+    }
+    .mainMenuList {
+        display: flex;
+        flex-direction: column;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        @media (min-width: $desktop) {
+            flex-direction: row;
+        }
+        .mainMenuItem {
+            display: block;
+            background-color: $black-50;
+            transition: all 0.2s ease-in-out;
+            &:hover {
+                background-color: $primary-dark;
+                .mainMenuLink {
+                    .linkText {
+                        color: $black-50;
+                    }
+                }
+            }
+            .mainMenuLink {
+                display: block;
+                padding: 0.5rem 1rem;
+                text-decoration: none;
+                text-align: right;
+                outline: none;
+                border: none;
+                background: transparent;
+                width: 100%;
+                .linkText {
+                    display: inline-block;
+                    font-family: $font-inter;
+                    font-weight: $semi-bold;
+                    color: $primary-dark;
+                }
+            }
+        }
+    }
+}
