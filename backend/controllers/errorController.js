@@ -20,11 +20,10 @@ const handleJWTError = () =>
 	new AppError("Invalid token. Please log in again!", 401);
 
 const handleJWTExpiredError = () =>
-	new AppError("Your token has expired! Please log in again.", 401);
+	new AppError("Your token has expired! Please log in again!", 401);
 
 const sendErrorDev = (err, req, res) => {
-	console.log(err);
-	// A) API
+	// API
 	if (req.originalUrl.startsWith("/api")) {
 		return res.status(err.statusCode).json({
 			status: "fail",
@@ -34,7 +33,7 @@ const sendErrorDev = (err, req, res) => {
 		});
 	}
 
-	// B) RENDERED WEBSITE
+	// RENDERED WEBSITE
 	console.error("ERROR 💥", err);
 	return res.status(err.statusCode).render("error", {
 		title: "Something went wrong!",
@@ -43,47 +42,45 @@ const sendErrorDev = (err, req, res) => {
 };
 
 const sendErrorProd = (err, req, res) => {
-	// A) API
+	// API
 	if (req.originalUrl.startsWith("/api")) {
-		// console.log(err.isOperational);
-		// A) Operational, trusted error: send message to client
+		// Operational, trusted error: send message to client
 		if (err.isOperational) {
 			return res.status(err.statusCode).json({
 				status: err.status,
 				message: err.message,
 			});
 		}
-		// B) Programming or other unknown error: don't leak error details
-		// 1) Log error
+		// Programming or other unknown error: don't leak error details
+		// Log error
 		console.error("ERROR 💥", err);
-		// 2) Send generic message
+		// Send generic message
 		return res.status(500).json({
 			status: "error",
 			message: "Something went very wrong!",
 		});
 	}
 
-	// B) RENDERED WEBSITE
-	// A) Operational, trusted error: send message to client
+	// RENDERED WEBSITE
+	// Operational, trusted error: send message to client
 	if (err.isOperational) {
-		// console.log(err);
 		return res.status(err.statusCode).render("error", {
 			title: "Something went wrong!",
 			msg: err.message,
 		});
 	}
-	// B) Programming or other unknown error: don't leak error details
-	// 1) Log error
+	// Programming or other unknown error: don't leak error details
+	// Log error
 	console.error("ERROR 💥", err);
-	// 2) Send generic message
+	// Send generic message
 	return res.status(err.statusCode).render("error", {
 		title: "Something went wrong!",
-		msg: "Please try again later.",
+		msg: "Please try again later!",
 	});
 };
 
 module.exports = (err, req, res, next) => {
-	// console.log(err);
+	// Based on the node_env, I've managed to send errors different
 
 	err.statusCode = err.statusCode || 500;
 	err.status = err.status || "error";
@@ -101,7 +98,6 @@ module.exports = (err, req, res, next) => {
 		if (error.name === "JsonWebTokenError") error = handleJWTError();
 		if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
 
-		// console.log(error);
 		sendErrorProd(error, req, res);
 	}
 };

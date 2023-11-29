@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Modal from '../MainContent/Modal/Modal';
 import Input from '../utils/Input/Input';
 import PollInput from '../utils/PollInput/PollInput';
+import add from '../../images/plus-solid.svg'
+import x from '../../images/delete.svg'
 import "./NavigationBar.scss"
 
 function NavigationBar() {
@@ -14,10 +15,35 @@ function NavigationBar() {
 	const [showCreatePoll, setshowCreatePoll] = useState(false);
 	const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
+	// Handle createPoll inputs
+	const [inputCount, setInputCount] = useState(3); // Track the number of inputs
+	const [createPollData, setCreatePollData] = useState({
+		question: "",
+		options: Array.from({ length: 3 }, () => ({ name: "" })), // Initialize with 3 empty inputs
+	});
+
+	// Add a new option to the form
+	const addOptionInput = () => {
+		setInputCount(inputCount + 1);
+		setCreatePollData((prevData) => ({
+		...prevData,
+		options: [...prevData.options, { name: "" }],
+		}));
+	};
+
+	// Remove an existing option from the form
+	const removeOptionInput = (indexToRemove) => {
+		setCreatePollData((prevData) => ({
+			...prevData,
+			options: prevData.options.filter((_, index) => index !== indexToRemove),
+		}));
+		setInputCount(inputCount - 1);
+	};
+
 	// Handle errors
 	const [error, setError] = useState('');
 
-	// Handle Registration form 
+	// Handle Registration and Login forms 
 	const [regFormData, setRegFormData] = useState({
 		email: "",
 		password: "",
@@ -27,16 +53,6 @@ function NavigationBar() {
 		email: "",
 		password: "",
 	});
-	const [createPollData, setCreatePollData] = useState({
-		question: "",
-		options: [{
-			name: ""
-		}, {
-			name: ""
-		}, {
-			name: ""
-		}],
-	});
 
 	const handleRegChange = (e) => {
 		const { name, value } = e.target;
@@ -45,6 +61,15 @@ function NavigationBar() {
 			[name]: value,
 		}));
 	};
+
+	const handleLoginChange = (e) => {
+		const { name, value } = e.target;
+		setLoginFormData((prevFormData) => ({
+			...prevFormData, 
+			[name]: value,
+		}));
+	};
+
 	const handlePollChange = (e, index) => {
 		const { value } = e.target;
 		// Update the option at the specified index
@@ -56,13 +81,6 @@ function NavigationBar() {
 				options: updatedOptions,
 			};
 		});
-	};
-	const handleLoginChange = (e) => {
-		const { name, value } = e.target;
-		setLoginFormData((prevFormData) => ({
-			...prevFormData, 
-			[name]: value,
-		}));
 	};
 	
 	const handleRegSubmit = async (e) => {
@@ -81,6 +99,7 @@ function NavigationBar() {
 				}
 			});
 			if(res.data.status === 'success') {
+				// On success registration, close the reg modal and open the login modal
 				closeModal();
 				setShowLogin(true);
 			}
@@ -92,6 +111,8 @@ function NavigationBar() {
 	const handleLoginSubmit = async (e) => {
 		try {
 			e.preventDefault();
+
+			// Fetch POST request to send login form data
 			const { email, password } = loginFormData;
 			const res = await axios({
 				method: "POST",
@@ -106,12 +127,13 @@ function NavigationBar() {
 			if(res.data.status === 'success') {
 				window.setTimeout(() => {
 					location.assign('/');
-				}, 1500);
+				}, 400);
 			}
 		} catch (err) {
 			setError(err.response.data.message);
 		}
 	}
+
 	const handleCreatePoll = async (e) => {
 		try {
 			e.preventDefault();
@@ -128,13 +150,13 @@ function NavigationBar() {
 			if(res.data.status === 'success') {
 				window.setTimeout(() => {
 					location.assign('/');
-				}, 1500);
-				// console.log(res.data.token);
+				}, 400);
 			}
 		} catch (err) {
 			setError(err.response.data.message);
 		}
 	}
+
 	const handleLogOut = async () => {
 		try {
 			const res = await axios({
@@ -163,13 +185,15 @@ function NavigationBar() {
 				if (res.data.status === 'success') {
 					setIsUserLoggedIn(true);
 				}
-			} catch (err) {err}
+			} catch (err) {
+				console.log(err);
+			}
 		}
 	
 		fetchData(); // Call the async function
 
         // Poți adăuga dependențe aici, dacă este nevoie
-    }, [isUserLoggedIn]);
+    }, []);
 
 
 	// Handle all modals (Login, Register and CreatePoll)
@@ -196,7 +220,12 @@ function NavigationBar() {
 		setError('');
 		setRegFormData('');
 		setLoginFormData('');
+		setCreatePollData({
+			question: "",
+			options: Array.from({ length: 3 }, () => ({ name: "" })), // Initialize with 3 empty inputs
+		});
 	};
+
     return (
 		<>
 			<header className={`header ${isMenuOpen ? 'activeMenu' : ''}`}>
@@ -216,7 +245,7 @@ function NavigationBar() {
 						</svg>
 					</a>
 					{/* Change state of menu when mobile hamburger is clicked */}
-					<button className="menuTrigger" onClick={() => setIsMenuOpen(!isMenuOpen)}> 
+					<button  type="button" className="menuTrigger" onClick={() => setIsMenuOpen(!isMenuOpen)}> 
 						<span className="icon iconHamburger">
 							<span className="hamburgerBar hamburgerBar1"></span>
 							<span className="hamburgerBar hamburgerBar2"></span>
@@ -224,30 +253,30 @@ function NavigationBar() {
 						</span>
 						<span className="SROnly">Open main menu</span>
 					</button>
-					{/* TODO: Conditional render the content of the navbar by isAuth */}
+					{/* Conditional render the content of the navbar by isUserLoggedIn */}
 					<nav className="mainMenu">
 						<ul className="mainMenuList">
 							{isUserLoggedIn ?
 								<>
 									<li className="mainMenuItem">
-									<button className="mainMenuLink" onClick={handleLogOut}>
+									<button type="button" className="mainMenuLink" onClick={handleLogOut}>
 										<span className="linkText">Log out</span>
 									</button>
 									</li>
 									<li className="mainMenuItem">
-										<button className="mainMenuLink" onClick={openCreatePoll}>
+										<button type="button" className="mainMenuLink" onClick={openCreatePoll}>
 											<span className="linkText">Create poll</span>
 										</button>
 									</li>
 								</> : 
 								<>
 									<li className="mainMenuItem">
-										<button className="mainMenuLink" onClick={openLogin}>
+										<button type="button" className="mainMenuLink" onClick={openLogin}>
 											<span className="linkText">Login</span>
 										</button>
 									</li>
 									<li className="mainMenuItem">
-										<button className="mainMenuLink" onClick={openRegister}>
+										<button type="button" className="mainMenuLink" onClick={openRegister}>
 											<span className="linkText">Register</span>
 										</button>
 									</li>
@@ -297,20 +326,29 @@ function NavigationBar() {
 						<div className="formPollOptionsSection">
 							<p>Options</p>
 							<div className="formPollOptions">
-							{
-							createPollData.options.slice(0, 3).map((option, index) => (
-								<PollInput
-									key={index}
-									label={`Option ${index + 1}`}
-									type="text"
-									id={`option${index + 1}`}
-									placeholder={`Option ${index + 1}`}
-									value={option.name}
-									visible="SROnly"
-									onChange={(e) => handlePollChange(e, index)}
-								/>
-								))
-							}
+								{
+									createPollData.options.slice(0, inputCount).map((option, index) => (
+									<div key={index} className="optionInputContainer">
+										<PollInput
+											label={`Option ${index + 1}`}
+											type="text"
+											id={`option${index + 1}`}
+											placeholder={`Option ${index + 1}`}
+											value={option.name}
+											visible="SROnly"
+											onChange={(e) => handlePollChange(e, index)}
+										/>
+										{index >= 3 && ( // Make sure default inputs are not removable
+											<button type="button" className="removeOptionBtn" onClick={() => removeOptionInput(index)}>
+												<img src={x} alt="Remove the input." />
+											</button>
+										)}
+									</div>
+								))}
+								<button type="button" className="optionAdd" onClick={addOptionInput}>
+									<img src={add} alt="Add a new input." />
+									<span>Add Option</span>
+								</button>
 							</div>
 						</div>
 						<p className="formsError">{error}</p>

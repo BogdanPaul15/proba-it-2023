@@ -7,6 +7,8 @@ function Poll(props) {
     const [currentUserId, setCurrentUserId] = useState('');
     const [selectedOption, setSelectedOption] = useState('');
     const [votingError, setVotingError] = useState('');
+
+    // Handle poll voting
     const handlePollVote = async (e) => {
         try {
             e.preventDefault();
@@ -23,13 +25,14 @@ function Poll(props) {
 			if(res.data.status === "success") {
                 window.setTimeout(() => {
 					location.assign('/');
-				}, 1500);
-                // console.log(res.data.body)
+				}, 400);
             }
 		} catch (err) {
 			setVotingError(err.response.data.message);
 		}
     }
+
+    // Handle poll deletion
     const handlePollDelete = async (e) => {
 		try {
             e.preventDefault();
@@ -42,9 +45,11 @@ function Poll(props) {
                 location.reload(true);
             }
 		} catch (err) {
-			err
+			setVotingError(err.response.data.message);
 		}
     }
+
+    // Retrieve user id from the jwt token
     useEffect(() => {
 		async function fetchData() {
 			try {
@@ -62,71 +67,74 @@ function Poll(props) {
 	
 		fetchData(); // Call the async function
 
-        // Poți adăuga dependențe aici, dacă este nevoie
-    }, [currentUserId]);
-    // console.log(currentUserId);
+    }, []);
+
     return (
         <div className="pollCard">
             <div className="pollHeader">
                 <h2 className="pollQuestion">{props.question}</h2>
                 <h3 className="pollInstruction">Make a choice:</h3>
             </div>
-            <form className="#">
+            <form>
                 <ul className="pollOptionShowcase">
                     {
+                        // Map over all options of the poll
                         props.options.map((option) => {
                             return(
                                 <li className="pollOptionItem" key={option._id}>
                                     {
-                                    props.voters.find(el => el === currentUserId) ?
-                                    <div className="pollVoting">
-                                        <p>{`${Math.trunc((option.votes.quantity / props.total_votes) * 100)}%`}</p>
-                                    </div> : "" }
+                                        // If the user already votes to this poll, show him the results by percentage (only if he's logged in)
+                                        props.voters.find(el => el === currentUserId) ?
+                                        <div className="pollVoting">
+                                            <p>{`${Math.trunc((option.votes.quantity / props.total_votes) * 100)}%`}</p>
+                                        </div> : "" 
+                                    }
                                     <div className="pollInputs">
-                                        <div className="asta">
+                                        <div className="pollInput">
                                             {
+                                                // Handle situation when user is not logged in by not letting him to vote (disable the field), or if he already voted, hide the input 
                                                 currentUserId ? 
-                                                props.voters.find(el => el === currentUserId) ? <input type="radio" id={option._id} name="options" value={option.name} className="" onChange={() => setSelectedOption(option._id)} disabled className="SROnly" /> :
-                                                <input type="radio" id={option._id} name="options" value={option.name} className="" onChange={() => setSelectedOption(option._id)} /> : 
-                                                <input type="radio" id={option._id} name="options" value={option.name} className="" onChange={() => setSelectedOption(option._id)} disabled />
+                                                props.voters.find(el => el === currentUserId) ? <input type="radio" id={option._id} name="options" value={option.name} onChange={() => setSelectedOption(option._id)} disabled className="SROnly" /> :
+                                                <input type="radio" id={option._id} name="options" value={option.name} onChange={() => setSelectedOption(option._id)} /> : 
+                                                <input type="radio" id={option._id} name="options" value={option.name} onChange={() => setSelectedOption(option._id)} disabled />
                                             }
                                             <label htmlFor={option._id}>{option.name}</label>
                                             {
+                                                // Show a circle-check to highlight the user's answer
                                                 option.votes.voters.find(el => el === currentUserId) ?
-                                                <img src={voted} /> : ""
+                                                <img src={voted} alt="Circle check." /> : ""
                                             }
                                         </div>
                                         {
+                                            // If the user already voted and is logged in, display a progress bar for each option representing the votes
                                             props.voters.find(el => el === currentUserId) &&  (option.votes.quantity / props.total_votes) * 100 ?
                                             <div className="pollOptionProgress">
-                                            <div className="progressBar" style={{width: `${(option.votes.quantity / props.total_votes) * 100}%`}}></div>
-                                        </div> : ""
+                                                <div className="progressBar" style={{width: `${(option.votes.quantity / props.total_votes) * 100}%`}}></div>
+                                            </div> : ""
                                         }
                                     </div>
-                                    {/* {
-                                        props.voters.find(el => el === currentUserId) ? <p>{option.votes.quantity}</p> : ""
-                                    } */}
-                                    {console.log(props.voters)}
                                 </li>
                             );
                         })
                     }
                 </ul>
-                <p className="pollVotingError">{votingError}</p>
-                <footer className="pollFooter">
-                    <div className="pollStats">
-                        <span>Total Votes: {props.total_votes}</span>
-                    </div>
-                    <div className="pollOptionButtons">
-                        {
-                            currentUserId == props.created_by ? <button className="pollButton" onClick={handlePollDelete}>Delete</button> : ""
-                        }
-                        {
-                            currentUserId ? props.voters.find(el => el === currentUserId) ? "" : <button className="pollButton" onClick={handlePollVote}>Vote</button> : ""
-                        }
-                    </div>
-                </footer>
             </form>
+            <p className="pollVotingError">{votingError}</p>
+            <footer className="pollFooter">
+                <div className="pollStats">
+                    <span>Total Votes: {props.total_votes}</span>
+                </div>
+                <div className="pollOptionButtons">
+                    {
+                        // If the user is who created the poll, display him the 'delete' button
+                        currentUserId == props.created_by ? <button className="pollButton" onClick={handlePollDelete}>Delete</button> : ""
+                    }
+                    {
+                        // If the user didn't vote to this poll, display him the 'vote' button
+                        currentUserId ? props.voters.find(el => el === currentUserId) ? "" : <button type="submit" className="pollButton" onClick={handlePollVote}>Vote</button> : ""
+                    }
+                </div>
+            </footer>
         </div>
     )
 }

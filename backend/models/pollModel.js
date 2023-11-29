@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const optionSchema = new mongoose.Schema({
 	name: {
 		type: String,
-		required: [true, "Please provide the option name."],
+		required: [true, "Please provide the option name!"],
 	},
 	votes: {
 		quantity: {
@@ -22,16 +22,13 @@ const optionSchema = new mongoose.Schema({
 const pollSchema = new mongoose.Schema({
 	question: {
 		type: String,
-		required: [true, "Please provide a question for the poll."],
+		required: [true, "Please provide a question for the poll!"],
 	},
 	created_by: String,
 	options: [optionSchema],
-	// voters: {
-	// 	type: [String],
-	// 	default: [],
-	// },
 });
 
+// Get all the voters from the current poll by iterating over voters from all options
 pollSchema.virtual("voters").get(function () {
 	let allVoters = [];
 	this.options.forEach((option) => {
@@ -40,6 +37,7 @@ pollSchema.virtual("voters").get(function () {
 	return allVoters;
 });
 
+// Get all the votes from the current poll by iterating over votes from all options
 pollSchema.virtual("total_votes").get(function () {
 	let totalVotes = 0;
 	this.options.forEach((option) => {

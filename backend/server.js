@@ -18,10 +18,10 @@ mongoose
 		useFindAndModify: false,
 		useUnifiedTopology: true,
 	})
-	.then(() => console.log("Database is running."));
+	.then(() => console.log("Database is running!"));
 
 // Running the server
 const port = process.env.PORT;
 app.listen(port, () => {
-	console.log(`App is running at http://localhost:${port}.`);
+	console.log(`App is running at http://localhost:${port}!`);
 });

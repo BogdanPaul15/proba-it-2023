@@ -1,15 +1,14 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "PollIT",
+  "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-    "start:prod": "set NODE_ENV=production&& nodemon server.js",
-    "test": "nodemon test.js"
+    "start:prod": "npx cross-env NODE_ENV=production nodemon server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Prisacaru Bogdan-Paul",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -20,9 +19,12 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.3.0",
     "mongoose": "^5.13.21",
-    "morgan": "^1.10.0",
     "nodemon": "^3.0.1",
     "promisify": "^0.0.3",
     "validator": "^13.11.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "morgan": "^1.10.0"
   }
 }

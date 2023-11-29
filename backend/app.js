@@ -13,16 +13,10 @@ const app = express();
 
 // Defining Middlewares
 
-app.use(morgan("dev"));
+if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ origin: true, credentials: true }));
-
-// Test middleware
-app.use((req, res, next) => {
-	console.log(req.cookies);
-	next();
-});
 
 // Routes
 app.use("/api/users", userRouter);

@@ -1,9 +1,10 @@
-import { React, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import Poll from './Poll/Poll'
 import "./PollResults.scss"
 
 function PollResults() {
+    // Get all the polls from the database
     const [polls, setPolls] = useState([]);
     useEffect(() => {
         async function fetchData() {
@@ -15,17 +16,19 @@ function PollResults() {
                 if (res.data.status === 'success') {
                     setPolls(res.data.data.polls);
                 }
-            } catch (err) {err}
+            } catch (err) {
+                console.log(err);
+            }
         }
     
         fetchData(); // Call the async function
-    
-        // Poți adăuga dependențe aici, dacă este nevoie
+
     }, []);
     return (
         <section className="pollSection">
             <div className="pollShowcase">
                 {
+                    // Map over all polls
                     polls.map((poll) => {
                         return <Poll 
                         key={poll._id} 

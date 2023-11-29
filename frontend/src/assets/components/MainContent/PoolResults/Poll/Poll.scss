@@ -13,33 +13,166 @@
     padding: 0.625rem;
     box-shadow: 0px 4px 4px 0px rgba(0,0,0,.25);
     min-width: 15rem;
+    max-width: 15rem;
     @media (min-width: $tablet) {
         padding: 1rem;
         min-width: 25rem;
+        max-width: 25rem;
     }
     @media (min-width: $desktop) {
         align-self: stretch;
         padding: 2rem;
         justify-content: space-between;
+        min-width: 35rem;
         max-width: 35rem;
     }
-    .pollQuestion {
-        font-family: $font-inter;
-        font-size: 0.75rem;
-        color: $black-900;
-        font-weight: $medium;
-        margin: 0;
-        @media (min-width: $tablet) {
-            font-size: 1.25rem;
+    .pollHeader {
+        display: flex;
+        flex-direction: column;
+        .pollQuestion {
+            font-family: $font-inter;
+            font-size: 0.75rem;
+            color: $black-900;
+            font-weight: $medium;
+            margin: 0;
+            @media (min-width: $tablet) {
+                font-size: 1.25rem;
+            }
+        }
+        .pollInstruction {
+            font-family: $font-inter;
+            font-size: 0.625rem;
+            color: $black-900;
+            font-weight: $light;
+            @media (min-width: $tablet) {
+                font-size: 0.9375rem;
+            }
         }
     }
-    .pollInstruction {
-        font-family: $font-inter;
-        font-size: 0.625rem;
-        color: $black-900;
-        font-weight: $light;
-        @media (min-width: $tablet) {
-            font-size: 0.9375rem;
+    form {
+        .pollOptionShowcase {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 1rem;
+            list-style-type: none;
+            padding-inline-start: 0;
+            margin-bottom: 1rem;
+            @media (min-width: $tablet) {
+                gap: 1.5rem;
+                margin-bottom: 4rem;
+            }
+            @media (min-width: $desktop) {
+                gap: 2rem;
+                margin-bottom: 5rem;
+            }
+            .pollOptionItem {
+                display: flex;
+                flex-direction: row;
+                gap: 1rem;
+                width: 100%;
+                .pollVoting {
+                    flex: 0 0 auto;
+                    min-width: 34px;
+                    @media (min-width: $tablet) {
+                        min-width: 36px;
+                    }
+                    @media (min-width: $desktop) {
+                        min-width: 50px;
+                    }
+                    p {
+                        margin: 0;
+                        display: inline-block;
+                        font-family: $font-inter;
+                        font-size: 0.75rem;
+                        font-weight: $bold;
+                        color: $black-900;
+                        @media (min-width: $tablet) {
+                            font-size: 0.9375rem;
+                        }
+                        @media (min-width: $desktop) {
+                            font-size: 1.125rem;
+                        }
+                    }
+                }
+                p {
+                    margin: 0;
+                    font-family: $font-inter;
+                    font-size: 0.625rem;
+                    font-weight: $bold;
+                    color: $black-900;
+                    @media (min-width: $tablet) {
+                        font-size: 0.9375rem;
+                    }
+                    @media (min-width: $desktop) {
+                        font-size: 1.125rem;
+                    }
+                }
+                .pollInputs {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    gap: 0.625rem;
+                    .pollOptionProgress {
+                        height: 5px;
+                        width: 100%;
+                        .progressBar {
+                            width: 0%;
+                            background-color: $primary-light;
+                            height: 100%;
+                            border-radius: 10px;
+                            -webkit-transition: width 1s ease-in-out;
+                            -moz-transition: width 1s ease-in-out;
+                            -o-transition: width 1s ease-in-out;
+                            transition: width 1s ease-in-out;
+                        }
+                    }
+                    .pollInput {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        gap: 0.5rem;
+                        input[type='radio'] {
+                            accent-color: $primary-dark;
+                            width: 14px;
+                            height: 14px;
+                            border: 1px solid $primary-dark;
+                            border-radius: 50%;
+                            outline: none;
+                            @media (min-width: $tablet) {
+                                width: 20px;
+                                height: 20px;
+                            }
+                            @media (min-width: $desktop) {
+                                width: 27px;
+                                height: 27px;
+                            }
+                        }
+                        label {
+                            font-family: $font-inter;
+                            font-size: 0.625rem;
+                            font-weight: $regular;
+                            color: $black-900;
+                            @media (min-width: $tablet) {
+                                font-size: 0.9375rem;
+                            }
+                            @media (min-width: $desktop) {
+                                font-size: 1.125rem;
+                            }
+                        }
+                        img {
+                            height: 10px;
+                            width: 10px;
+                            @media (min-width: $tablet) {
+                                height: 20px;
+                                width: 20px;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
     .pollVotingError {
@@ -50,136 +183,6 @@
         margin: 0.625rem 0;
         @media (min-width: $tablet) {
             font-size: 0.9375rem;
-        }
-    }
-    .pollOptionShowcase {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 1rem;
-        list-style-type: none;
-        padding-inline-start: 0;
-        margin-bottom: 1rem;
-        @media (min-width: $tablet) {
-            gap: 1.5rem;
-            margin-bottom: 4rem;
-        }
-        @media (min-width: $desktop) {
-            gap: 2rem;
-            margin-bottom: 5rem;
-        }
-        .pollOptionItem {
-            display: flex;
-            flex-direction: row;
-            // justify-content: space-between;
-            gap: 1rem;
-            width: 100%;
-            .pollVoting {
-                flex: 0 0 auto;
-                min-width: 34px;
-                @media (min-width: $tablet) {
-                    min-width: 36px;
-                }
-                @media (min-width: $desktop) {
-                    min-width: 50px;
-                }
-                p {
-                    margin: 0;
-                    display: inline-block;
-                    font-family: $font-inter;
-                    font-size: 0.75rem;
-                    font-weight: $bold;
-                    color: $black-900;
-                    @media (min-width: $tablet) {
-                        font-size: 0.9375rem;
-                    }
-                    @media (min-width: $desktop) {
-                        font-size: 1.125rem;
-                    }
-                }
-            }
-            p {
-                margin: 0;
-                font-family: $font-inter;
-                font-size: 0.625rem;
-                font-weight: $bold;
-                color: $black-900;
-                @media (min-width: $tablet) {
-                    font-size: 0.9375rem;
-                }
-                @media (min-width: $desktop) {
-                    font-size: 1.125rem;
-                }
-            }
-            .pollInputs {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                gap: 0.625rem;
-                .pollOptionProgress {
-                    height: 5px;
-                    width: 100%;
-                    // border: 1px solid black;
-                    .progressBar {
-                        width: 0%;
-                        background-color: $primary-light;
-                        height: 100%;
-                        border-radius: 10px;
-                        -webkit-transition: width 1s ease-in-out;
-                        -moz-transition: width 1s ease-in-out;
-                        -o-transition: width 1s ease-in-out;
-                        transition: width 1s ease-in-out;
-                    }
-                }
-                .asta {
-                    display: flex;
-                    flex-direction: row;
-                    align-items: center;
-                    gap: 0.5rem;
-                    input[type='radio'] {
-                        accent-color: $primary-dark;
-                        width: 14px;
-                        height: 14px;
-                        border: 1px solid $primary-dark;
-                        border-radius: 50%;
-                        outline: none;
-                        @media (min-width: $tablet) {
-                            width: 20px;
-                            height: 20px;
-                        }
-                        @media (min-width: $desktop) {
-                            width: 27px;
-                            height: 27px;
-                        }
-                    }
-                    label {
-                        font-family: $font-inter;
-                        font-size: 0.625rem;
-                        font-weight: $regular;
-                        color: $black-900;
-                        @media (min-width: $tablet) {
-                            font-size: 0.9375rem;
-                        }
-                        @media (min-width: $desktop) {
-                            font-size: 1.125rem;
-                        }
-                    }
-                    img {
-                        height: 10px;
-                        width: 10px;
-                        @media (min-width: $tablet) {
-                            height: 20px;
-                            width: 20px;
-                        }
-                        // @media (min-width: $desktop) {
-                        //     height: 25px;
-                        //     width: 25px;
-                        // }
-                    }
-                }
-            }
         }
     }
     .pollFooter {

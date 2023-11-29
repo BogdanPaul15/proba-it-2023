@@ -1,4 +1,3 @@
-import React from 'react'
 import Hero from './Hero/Hero'
 import PollResults from './PoolResults/PollResults'
 import "./MainContent.scss"

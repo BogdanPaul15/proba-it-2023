@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const validator = require("validator");
 const bcrypt = require("bcryptjs");
 
 // Defining the user schema
@@ -37,6 +36,7 @@ const userSchema = new mongoose.Schema({
 	},
 });
 
+// Hash the password using 'bcrypt'
 userSchema.pre("save", async function (next) {
 	// Only run this function if password was actually modified
 	if (!this.isModified("password")) return next();
@@ -49,6 +49,7 @@ userSchema.pre("save", async function (next) {
 	next();
 });
 
+// Check plain password with encrypted password
 userSchema.methods.correctPassword = async function (
 	candidatePassword,
 	userPassword
