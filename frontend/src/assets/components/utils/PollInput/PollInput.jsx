@@ -1,3 +1,4 @@
+import React from "react"
 import "./PollInput.scss"
 
 function PollInput({ label, type, id, placeholder, value, onChange, visible }) {

@@ -1,3 +1,4 @@
+import React from "react"
 import close from "../../../images/close-modal.svg"
 import "./Modal.scss"
 

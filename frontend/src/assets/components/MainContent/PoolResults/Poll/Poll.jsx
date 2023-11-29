@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { React, useEffect, useState } from 'react'
 import axios from 'axios'
 import voted from '../../../../images/circle-check-solid.svg'
 import "./Poll.scss"

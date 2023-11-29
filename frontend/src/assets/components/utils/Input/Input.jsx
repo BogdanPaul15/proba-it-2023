@@ -1,3 +1,4 @@
+import React from "react"
 import "./Input.scss"
 
 function Input({ label, type, id, placeholder, value, onChange }) {
